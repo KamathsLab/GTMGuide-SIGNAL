@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The SIGNAL Framework™ — GTM Diagnostic · The GTM Guide</title>
+<style>
+  :root {
+    --bg:      #070D16;
+    --card:    #0D1A27;
+    --card2:   #0A1520;
+    --accent:  #00E5B4;
+    --gold:    #F5C518;
+    --red:     #FF4D6D;
+    --white:   #FFFFFF;
+    --muted:   #8A9BB0;
+    --border:  #0D2535;
+    --border2: #142030;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    font-family: Arial, sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  .top-bar {
+    position: sticky; top: 0; z-index: 200;
+    background: rgba(7,13,22,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .brand { font-family: "Arial Black", Arial; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
+  .brand .a { color: var(--accent); }
+  .brand .w { color: var(--white); }
+  .progress-wrap { display: flex; align-items: center; gap: 14px; }
+  .progress-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: bold; text-transform: uppercase; }
+  .progress-bar-outer { width: 180px; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+  .progress-bar-inner { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: width 0.4s ease; }
+  .progress-count { font-size: 11px; color: var(--accent); font-weight: bold; font-family: "Arial Black", Arial; min-width: 60px; text-align: right; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 56px 48px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; flex-wrap: wrap;
+  }
+  .hero-left { flex: 1; min-width: 280px; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 9px; font-weight: bold; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+  }
+  .eyebrow-bar { width: 26px; height: 2px; background: var(--accent); }
+  .signal-big {
+    font-family: "Arial Black", Arial;
+    font-size: 72px; font-weight: 900; line-height: 0.9;
+    letter-spacing: -2px; color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: "Arial Black", Arial;
+    font-size: 28px; font-weight: 900; text-transform: uppercase;
+    color: var(--white); margin-bottom: 12px; line-height: 1.1;
+  }
+  .hero-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 520px; }
+  .scoring-key {
+    display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .key-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 12px;
+    font-size: 11px; font-weight: bold; letter-spacing: 0.5px;
+  }
+  .key-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* legend pills */
+  .legend-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .legend-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 4px;
+    font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+    border: 1px solid;
+  }
+  .legend-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ─── BODY LAYOUT ─── */
+  .body-wrap {
+    display: grid; grid-template-columns: 1fr 380px;
+    min-height: calc(100vh - 200px);
+    align-items: start;
+  }
+  .questions-col { padding: 40px 48px; border-right: 1px solid var(--border); }
+  .results-col {
+    position: sticky; top: 60px;
+    padding: 32px 28px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+
+  /* ─── PILLAR SECTION ─── */
+  .pillar-section { margin-bottom: 36px; }
+  .pillar-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+  }
+  .pillar-badge {
+    width: 38px; height: 38px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pillar-badge span { font-family: "Arial Black", Arial; font-size: 16px; font-weight: 900; color: var(--bg); }
+  .pillar-meta { flex: 1; }
+  .pillar-tag { font-size: 9px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+  .pillar-name { font-family: "Arial Black", Arial; font-size: 13px; font-weight: 900; text-transform: uppercase; color: var(--white); }
+  .pillar-mini-score {
+    font-family: "Arial Black", Arial; font-size: 13px; font-weight: 900;
+    min-width: 50px; text-align: right;
+  }
+
+  /* ─── QUESTION ROW ─── */
+  .q-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 20px;
+    background: var(--card2); border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .q-item:last-child { border-radius: 0 0 10px 10px; }
+  .q-item:hover { background: rgba(13,26,39,0.9); }
+  .q-num { font-size: 10px; font-weight: bold; font-family: "Arial Black", Arial; flex-shrink: 0; width: 22px; padding-top: 3px; }
+  .q-text { font-size: 13px; color: var(--muted); line-height: 1.55; flex: 1; }
+  .btn-group { display: flex; gap: 5px; flex-shrink: 0; margin-top: 1px; }
+  .ans-btn {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted); cursor: pointer;
+    font-size: 9px; font-weight: bold; letter-spacing: 0.8px;
+    font-family: "Arial Black", Arial;
+    padding: 5px 8px; border-radius: 4px;
+    transition: all 0.18s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ans-btn:hover { border-color: var(--muted); color: var(--white); }
+  .ans-btn.yes.active   { background: rgba(0,229,180,0.15); border-color: var(--accent); color: var(--accent); }
+  .ans-btn.partial.active { background: rgba(245,197,24,0.15); border-color: var(--gold); color: var(--gold); }
+  .ans-btn.no.active    { background: rgba(255,77,109,0.15); border-color: var(--red); color: var(--red); }
+
+  /* ─── RESULTS PANEL ─── */
+  .results-panel-title {
+    font-family: "Arial Black", Arial; font-size: 11px; font-weight: 900;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .results-panel-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* overall score ring */
+  .score-ring-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 20px; margin-bottom: 18px;
+  }
+  .ring-container { position: relative; width: 120px; height: 120px; margin-bottom: 16px; }
+  .ring-svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--border2); stroke-width: 10; }
+  .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease; }
+  .ring-text-wrap {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ring-pct { font-family: "Arial Black", Arial; font-size: 26px; font-weight: 900; line-height: 1; color: var(--white); }
+  .ring-label { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+  .maturity-badge {
+    font-family: "Arial Black", Arial; font-size: 11px; font-weight: 900;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 5px; border: 1px solid;
+    text-align: center;
+  }
+  .maturity-sub { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; line-height: 1.4; }
+
+  /* heatmap */
+  .heatmap-title {
+    font-family: "Arial Black", Arial; font-size: 10px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .heatmap-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 18px;
+  }
+  .hmap-cell {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; overflow: hidden; position: relative;
+    transition: all 0.4s ease;
+  }
+  .hmap-cell-fill {
+    position: absolute; inset: 0; border-radius: 8px;
+    opacity: 0; transition: opacity 0.5s ease;
+  }
+  .hmap-inner { position: relative; z-index: 1; }
+  .hmap-letter {
+    font-family: "Arial Black", Arial; font-size: 20px; font-weight: 900; line-height: 1;
+    margin-bottom: 2px;
+  }
+  .hmap-name { font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; line-height: 1.3; margin-bottom: 6px; }
+  .hmap-pct { font-family: "Arial Black", Arial; font-size: 18px; font-weight: 900; }
+  .hmap-bar-bg { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .hmap-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease, background 0.4s ease; }
+  .hmap-status {
+    font-size: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* next steps */
+  .next-steps-title {
+    font-family: "Arial Black", Arial; font-size: 10px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    margin: 18px 0 10px;
+  }
+  .next-step-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px; margin-bottom: 8px;
+    border-left: 3px solid;
+    transition: all 0.3s;
+  }
+  .ns-label { font-size: 9px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .ns-text { font-size: 11px; color: var(--muted); line-height: 1.55; }
+
+  /* empty state */
+  .empty-state {
+    text-align: center; padding: 24px 16px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .empty-icon { font-size: 28px; margin-bottom: 8px; }
+  .empty-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ─── CTA ─── */
+  .cta-box {
+    background: #091825; border: 1px solid #0D3040;
+    border-radius: 10px; overflow: hidden; margin: 40px 48px;
+  }
+  .cta-top-bar { height: 4px; background: var(--accent); }
+  .cta-inner {
+    padding: 22px 28px;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .cta-left { font-size: 13px; color: var(--white); }
+  .cta-left strong { color: var(--accent); font-family: "Arial Black", Arial; }
+  .cta-right { text-align: right; }
+  .cta-name { font-family: "Arial Black", Arial; font-size: 13px; color: var(--white); }
+  .cta-role { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: 0.5px; }
+
+  .footer-line { height: 5px; background: var(--accent); }
+
+  @media (max-width: 960px) {
+    .body-wrap { grid-template-columns: 1fr; }
+    .results-col { position: static; max-height: none; border-top: 1px solid var(--border); }
+    .questions-col { padding: 24px; }
+    .hero { padding: 36px 24px 24px; }
+    .top-bar { padding: 12px 24px; }
+    .cta-box { margin: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="brand"><span class="a">THE GTM </span><span class="w">GUIDE</span></div>
+  <div class="progress-wrap">
+    <span class="progress-label">Progress</span>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <span class="progress-count" id="progressCount">0 / 29</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="eyebrow"><div class="eyebrow-bar"></div>GTM Foundation Audit · B2B SaaS &amp; AI-Native Startups</div>
+    <div class="signal-big">SIGNAL</div>
+    <div class="hero-title">The SIGNAL Framework™</div>
+    <div class="hero-sub">Score each question honestly. The heatmap updates in real time — revealing your strongest and weakest GTM signals, and the exact actions to take next.</div>
+    <div class="scoring-key">
+      <div class="key-pill"><div class="key-dot" style="background:var(--accent)"></div>YES = 2 pts — Fully operational</div>
+      <div class="key-pill"><div class="key-dot" style="background:var(--gold)"></div>PARTIAL = 1 pt — Exists but incomplete</div>
+      <div class="key-pill"><div class="key-dot" style="background:var(--red)"></div>NO = 0 pts — Critical gap</div>
+    </div>
+    <div class="legend-row">
+      <div class="legend-pill" style="background:rgba(255,77,109,0.1);border-color:rgba(255,77,109,0.4);color:var(--red)"><div class="dot" style="background:var(--red)"></div>0–39% Critical</div>
+      <div class="legend-pill" style="background:rgba(245,197,24,0.1);border-color:rgba(245,197,24,0.4);color:var(--gold)"><div class="dot" style="background:var(--gold)"></div>40–59% Developing</div>
+      <div class="legend-pill" style="background:rgba(0,229,180,0.08);border-color:rgba(0,229,180,0.3);color:#7be8cf"><div class="dot" style="background:#7be8cf"></div>60–79% Good</div>
+      <div class="legend-pill" style="background:rgba(0,229,180,0.15);border-color:rgba(0,229,180,0.5);color:var(--accent)"><div class="dot" style="background:var(--accent)"></div>80–100% Strong</div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body-wrap">
+
+  <!-- QUESTIONS -->
+  <div class="questions-col" id="questionsCol">
+  </div>
+
+  <!-- RESULTS PANEL -->
+  <div class="results-col">
+    <div class="results-panel-title">Live Results</div>
+
+    <!-- Ring score -->
+    <div class="score-ring-wrap">
+      <div class="ring-container">
+        <svg class="ring-svg" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="50"/>
+          <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="50"
+            stroke="#0D2535"
+            stroke-dasharray="314"
+            stroke-dashoffset="314"/>
+        </svg>
+        <div class="ring-text-wrap">
+          <div class="ring-pct" id="overallPct">—</div>
+          <div class="ring-label">Overall</div>
+        </div>
+      </div>
+      <div class="maturity-badge" id="maturityBadge" style="background:rgba(13,37,53,0.6);border-color:var(--border);color:var(--muted)">
+        Answer questions to score
+      </div>
+      <div class="maturity-sub" id="maturitySub">Select YES / PARTIAL / NO for each question</div>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="heatmap-title">Signal Heatmap</div>
+    <div class="heatmap-grid" id="heatmapGrid">
+      <!-- generated by JS -->
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps-title">Priority Actions</div>
+    <div id="nextStepsWrap">
+      <div class="empty-state">
+        <div class="empty-icon">📡</div>
+        <div class="empty-text">Complete the diagnostic to unlock your personalised GTM action plan.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-box">
+  <div class="cta-top-bar"></div>
+  <div class="cta-inner">
+    <div class="cta-left">
+      Score all 6 signals — then book a free diagnostic session to build your GTM roadmap.<br>
+      <strong>Follow for the full GTM Guide Series →</strong>
+    </div>
+    <div class="cta-right">
+      <div class="cta-name">Ajay Kamath</div>
+      <div class="cta-role">Fractional GTM Advisory · AI-First · APAC</div>
+    </div>
+  </div>
+</div>
+<div class="footer-line"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const pillars = [
+  {
+    id: "S", letter: "S", color: "#00E5B4",
+    tag: "Signal 01 — Segment & ICP",
+    name: "Target Audience & ICP",
+    shortName: "Segment & ICP",
+    questions: [
+      "Is your ICP validated with 4–6 specific customer and pain attributes, based on won/lost data?",
+      "Is your target audience segmented and prioritised by market opportunity and product fit?",
+      "Have you clearly defined and operationalised an Anti-ICP to prevent mis-spent GTM resources?",
+      "Are you actively tracking and responding to critical buying triggers (e.g., job change, funding, regulation)?",
+      "Do you have segment-specific messaging that addresses unique customer pains?"
+    ],
+    actions: {
+      critical:    "Run a full ICP teardown using your last 20 deals. Identify 4–6 shared firmographic and pain attributes. Build an Anti-ICP list immediately to stop wasting pipeline coverage.",
+      developing:  "Your ICP exists but isn't operationalised. Add intent signals and buying triggers to your scoring model. Review your ICP quarterly against win/loss patterns.",
+      good:        "Solid ICP foundation — now sharpen segment-specific messaging and ensure your Anti-ICP is actively filtering your outbound and marketing campaigns.",
+      strong:      "ICP is a strength. Now build predictive ICP models using product usage and engagement data to proactively identify expansion and lookalike opportunities."
+    }
+  },
+  {
+    id: "I", letter: "I", color: "#F5C518",
+    tag: "Signal 02 — Intent & Positioning",
+    name: "Product-Market Fit & Positioning",
+    shortName: "PMF & Positioning",
+    questions: [
+      "Do you have clear evidence of Product-Market Fit (strong usage data, high customer satisfaction, low churn)?",
+      "Have you defined your primary positioning anchor relative to your key alternatives (spreadsheet, status quo)?",
+      "Is your core differentiation clear, believable, and clearly communicated as a strategic advantage?",
+      "Is your value proposition tied to measurable business outcomes that customers prioritise?"
+    ],
+    actions: {
+      critical:    "Stop all scaling activity until PMF is clearer. Interview your top 10 customers to understand exactly why they chose you and stayed. Use this to rebuild your positioning from first principles.",
+      developing:  "PMF signals are mixed. Define a single primary positioning anchor — pick one battle. Build a competitive comparison matrix and test your differentiation message with 5 prospects this month.",
+      good:        "Positioning is clear internally — now validate externally. A/B test homepage hero messages, run win/loss interviews quarterly, and tie every message to a measurable customer outcome.",
+      strong:      "Strong PMF and positioning. Leverage this as a competitive moat — arm your CS and sales teams with it as a retention and expansion tool."
+    }
+  },
+  {
+    id: "G", letter: "G", color: "#00E5B4",
+    tag: "Signal 03 — Go-to-Market Messaging",
+    name: "Messaging & Content Strategy",
+    shortName: "GTM Messaging",
+    questions: [
+      "Does your homepage hero message immediately convey who it's for, what it is, and what value it delivers?",
+      "Do you have a documented and consistent narrative across all GTM assets (homepage, sales deck, case studies, dark social)?",
+      "Are your top customer objections documented and being proactively addressed in your content?",
+      "Do you have a structured process for gathering and communicating proof (case studies, testimonials, results)?",
+      "Is your content designed to create demand and educate the market — not just capture existing demand?"
+    ],
+    actions: {
+      critical:    "Audit your homepage: can someone understand your product in 5 seconds? Rewrite your hero message using the formula: [Who it's for] + [What it does] + [Key outcome]. This is your highest-leverage fix.",
+      developing:  "Messaging exists but isn't consistent. Build a one-page narrative framework and enforce it across all GTM assets. Document your top 5 objections and create direct, proactive responses for each.",
+      good:        "Messaging is working — now systematise proof capture. Build a structured case study program and a dark social content calendar to create demand above the funnel.",
+      strong:      "Excellent messaging infrastructure. Now run narrative testing in paid channels and use it to identify your strongest category wedge for analyst and media conversations."
+    }
+  },
+  {
+    id: "N", letter: "N", color: "#F5C518",
+    tag: "Signal 04 — New Pipeline & Demand",
+    name: "Demand Generation & Acquisition Channels",
+    shortName: "Demand & Pipeline",
+    questions: [
+      "Is your primary acquisition channel generating a diversified and repeatable source of pipeline?",
+      "Do you have a diversified demand gen portfolio including content-led, community-led, and outbound signals?",
+      "Do you have clear lead scoring and qualification criteria based on ICP fit and intent signals?",
+      "Do you have a validated and operationalised demand generation attribution model?",
+      "Are you using data to optimise channel allocation and CAC across segments?"
+    ],
+    actions: {
+      critical:    "Identify your single highest-converting acquisition channel and double down on it before diversifying. Build a simple lead scoring model based on ICP fit + intent signals this week.",
+      developing:  "Pipeline is inconsistent. Audit your channel mix — find which 20% of channels produce 80% of qualified pipeline and reallocate budget. Build a basic attribution model, even in a spreadsheet.",
+      good:        "Demand gen is working in pockets. Now systematise: build a demand gen calendar, formalise your attribution model, and run quarterly CAC analysis by channel and segment.",
+      strong:      "Strong demand engine. Now build predictive pipeline models and test AI-powered outbound sequences to compound your existing channel performance."
+    }
+  },
+  {
+    id: "A", letter: "A", color: "#00E5B4",
+    tag: "Signal 05 — Acquisition & Sales Motion",
+    name: "Sales Motion & Repeatable Processes",
+    shortName: "Sales Motion",
+    questions: [
+      "Is your primary sales motion (sales-led, PLG, hybrid) validated and optimised for your market?",
+      "Do you have a clearly defined and documented repeatable sales process with specific stages and entry/exit criteria?",
+      "Have you developed and deployed sales enablement materials tailored to each process stage?",
+      "Is your CRM data quality high and consistently updated, with an operationalised data hygiene process?",
+      "Are you tracking sales velocity, win rates by segment, and sales cycle length to reverse-engineer growth?"
+    ],
+    actions: {
+      critical:    "Define your primary sales motion now — sales-led, PLG, or hybrid — and validate it with your top 5 closed-won accounts. Without this, every other GTM investment is built on sand.",
+      developing:  "Your process exists but isn't repeatable. Map your current sales stages with clear entry/exit criteria. Run a CRM audit and clean your pipeline data — dirty data kills forecasting.",
+      good:        "Good sales infrastructure. Now build stage-specific enablement materials and start tracking velocity metrics: average deal size, cycle length, and win rate by ICP segment.",
+      strong:      "Excellent sales engine. Now layer in AI-powered deal scoring, automated CRM hygiene, and predictive forecasting to compound your existing motion at scale."
+    }
+  },
+  {
+    id: "L", letter: "L", color: "#FF4D6D",
+    tag: "Signal 06 — Loyalty & Expansion",
+    name: "Customer Success, Retention & Expansion",
+    shortName: "Retention & Expansion",
+    questions: [
+      "Do you have a structured onboarding process designed to deliver immediate time-to-value for new customers?",
+      "Is your Customer Success team equipped with customer health scoring and proactive success plays?",
+      "Do you have a standardised cross-sell/upsell process with specific triggers and plays?",
+      "Are you regularly analysing churn data to identify product gaps and market misalignment?",
+      "Have you defined and are you tracking Net Revenue Retention (NRR) and other key retention metrics?"
+    ],
+    actions: {
+      critical:    "Churn is silently killing your growth. Conduct exit interviews for every lost customer this month. Build a minimum viable onboarding checklist targeting time-to-value within the first 30 days.",
+      developing:  "CS fundamentals are in place but not systematised. Build a customer health scoring model with 3–5 leading indicators of churn or expansion. Define your cross-sell triggers explicitly.",
+      good:        "Good retention foundation. Now formalise your expansion playbook — map specific triggers for upsell and cross-sell, and set a target NRR of 110–120% for your segment.",
+      strong:      "Retention is a genuine competitive advantage. Now leverage it in sales — use NRR, CSAT, and expansion case studies as proof points to accelerate new pipeline and reduce sales cycle length."
+    }
+  }
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+const answers = {}; // key: "pillarId-qIdx" → 0,1,2
+const totalQuestions = pillars.reduce((s, p) => s + p.questions.length, 0);
+
+// ─── RENDER QUESTIONS ──────────────────────────────────────────────────────
+function renderQuestions() {
+  const col = document.getElementById("questionsCol");
+  col.innerHTML = "";
+
+  pillars.forEach(pillar => {
+    const sec = document.createElement("div");
+    sec.className = "pillar-section";
+
+    const hdr = document.createElement("div");
+    hdr.className = "pillar-header";
+    hdr.innerHTML = `
+      <div class="pillar-badge" style="background:${pillar.color}">
+        <span>${pillar.letter}</span>
+      </div>
+      <div class="pillar-meta">
+        <div class="pillar-tag" style="color:${pillar.color}">${pillar.tag}</div>
+        <div class="pillar-name">${pillar.name}</div>
+      </div>
+      <div class="pillar-mini-score" id="miniScore-${pillar.id}" style="color:${pillar.color}">—</div>
+    `;
+    sec.appendChild(hdr);
+
+    pillar.questions.forEach((q, qi) => {
+      const row = document.createElement("div");
+      row.className = "q-item";
+      row.innerHTML = `
+        <div class="q-num" style="color:${pillar.color}">${String(qi+1).padStart(2,"0")}</div>
+        <div class="q-text">${q}</div>
+        <div class="btn-group">
+          <button class="ans-btn yes"  data-pid="${pillar.id}" data-qi="${qi}" data-val="2">YES</button>
+          <button class="ans-btn partial" data-pid="${pillar.id}" data-qi="${qi}" data-val="1">PART</button>
+          <button class="ans-btn no"   data-pid="${pillar.id}" data-qi="${qi}" data-val="0">NO</button>
+        </div>
+      `;
+      sec.appendChild(row);
+    });
+
+    col.appendChild(sec);
+  });
+
+  // event delegation
+  col.addEventListener("click", e => {
+    const btn = e.target.closest(".ans-btn");
+    if (!btn) return;
+    const pid = btn.dataset.pid;
+    const qi  = parseInt(btn.dataset.qi);
+    const val = parseInt(btn.dataset.val);
+    const key = `${pid}-${qi}`;
+
+    // toggle: if already selected, deselect
+    if (answers[key] === val) {
+      delete answers[key];
+      btn.classList.remove("active");
+    } else {
+      answers[key] = val;
+      // clear siblings
+      btn.closest(".btn-group").querySelectorAll(".ans-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+    updateResults();
+  });
+}
+
+// ─── RENDER HEATMAP CELLS ──────────────────────────────────────────────────
+function renderHeatmapCells() {
+  const grid = document.getElementById("heatmapGrid");
+  grid.innerHTML = "";
+  pillars.forEach(p => {
+    const cell = document.createElement("div");
+    cell.className = "hmap-cell";
+    cell.id = `hmap-${p.id}`;
+    cell.innerHTML = `
+      <div class="hmap-cell-fill" id="hmapFill-${p.id}"></div>
+      <div class="hmap-inner">
+        <div class="hmap-letter" id="hmapLetter-${p.id}" style="color:${p.color}">${p.letter}</div>
+        <div class="hmap-name">${p.shortName}</div>
+        <div class="hmap-pct" id="hmapPct-${p.id}" style="color:var(--muted)">—</div>
+        <div class="hmap-bar-bg"><div class="hmap-bar-fill" id="hmapBar-${p.id}" style="width:0%;background:${p.color}"></div></div>
+        <div class="hmap-status" id="hmapStatus-${p.id}" style="color:var(--muted)">Not started</div>
+      </div>
+    `;
+    grid.appendChild(cell);
+  });
+}
+
+// ─── SCORING HELPERS ───────────────────────────────────────────────────────
+function getPillarScore(pillar) {
+  const maxScore = pillar.questions.length * 2;
+  let score = 0, answered = 0;
+  pillar.questions.forEach((_, qi) => {
+    const key = `${pillar.id}-${qi}`;
+    if (answers[key] !== undefined) { score += answers[key]; answered++; }
+  });
+  return { score, maxScore, answered, total: pillar.questions.length,
+           pct: answered === 0 ? null : Math.round((score / maxScore) * 100) };
+}
+
+function getTier(pct) {
+  if (pct === null) return { label: "Not started", color: "var(--muted)", key: "none" };
+  if (pct <= 39)    return { label: "Critical Gap",  color: "var(--red)",    key: "critical" };
+  if (pct <= 59)    return { label: "Developing",    color: "var(--gold)",   key: "developing" };
+  if (pct <= 79)    return { label: "Good",          color: "#7be8cf",       key: "good" };
+  return               { label: "Strong",         color: "var(--accent)", key: "strong" };
+}
+
+function getOverallMaturity(pct) {
+  if (pct === null) return { label: "—", sub: "Answer questions to score", color: "var(--muted)", bg: "rgba(13,37,53,0.6)", border: "var(--border)" };
+  if (pct <= 39)  return { label: "Stalled GTM",        sub: "Fundamental rebuilding required before scaling", color: "var(--red)",    bg: "rgba(255,77,109,0.12)",  border: "rgba(255,77,109,0.4)" };
+  if (pct <= 59)  return { label: "Fragmented GTM",     sub: "Key gaps creating significant revenue drag",     color: "var(--gold)",   bg: "rgba(245,197,24,0.10)",  border: "rgba(245,197,24,0.4)" };
+  if (pct <= 74)  return { label: "Emerging GTM",       sub: "Right direction — focus on critical gaps now",   color: "#7be8cf",       bg: "rgba(0,229,180,0.08)",   border: "rgba(0,229,180,0.3)" };
+  if (pct <= 89)  return { label: "Scaling GTM",        sub: "Strong foundation — optimise and accelerate",    color: "var(--accent)", bg: "rgba(0,229,180,0.12)",   border: "rgba(0,229,180,0.45)" };
+  return              { label: "High-Performance GTM", sub: "Ready to compound — build on your strengths",   color: "var(--accent)", bg: "rgba(0,229,180,0.15)",   border: "var(--accent)" };
+}
+
+// ─── UPDATE RESULTS ────────────────────────────────────────────────────────
+function updateResults() {
+  const answered = Object.keys(answers).length;
+  // progress
+  document.getElementById("progressBar").style.width = `${(answered/totalQuestions)*100}%`;
+  document.getElementById("progressCount").textContent = `${answered} / ${totalQuestions}`;
+
+  let totalScore = 0, totalMax = 0, totalAnswered = 0;
+  const pillarResults = [];
+
+  pillars.forEach(p => {
+    const ps = getPillarScore(p);
+    pillarResults.push({ pillar: p, ...ps });
+
+    // mini score
+    const mini = document.getElementById(`miniScore-${p.id}`);
+    if (ps.answered > 0) {
+      mini.textContent = `${ps.pct}%`;
+    } else {
+      mini.textContent = "—";
+    }
+
+    // heatmap cell
+    const tier = getTier(ps.pct);
+    const pctEl = document.getElementById(`hmapPct-${p.id}`);
+    const barEl = document.getElementById(`hmapBar-${p.id}`);
+    const statusEl = document.getElementById(`hmapStatus-${p.id}`);
+    const fillEl = document.getElementById(`hmapFill-${p.id}`);
+
+    if (ps.answered > 0) {
+      pctEl.textContent = `${ps.pct}%`;
+      pctEl.style.color = tier.color;
+      barEl.style.width = `${ps.pct}%`;
+      barEl.style.background = tier.color;
+      statusEl.textContent = tier.label;
+      statusEl.style.color = tier.color;
+
+      // fill background intensity
+      let fillColor, fillOpacity;
+      if (tier.key === "critical")    { fillColor = "255,77,109";   fillOpacity = 0.07; }
+      else if (tier.key === "developing") { fillColor = "245,197,24"; fillOpacity = 0.06; }
+      else if (tier.key === "good")   { fillColor = "123,232,207";  fillOpacity = 0.06; }
+      else                            { fillColor = "0,229,180";    fillOpacity = 0.08; }
+      fillEl.style.background = `rgba(${fillColor},${fillOpacity})`;
+      fillEl.style.opacity = 1;
+    } else {
+      pctEl.textContent = "—"; pctEl.style.color = "var(--muted)";
+      barEl.style.width = "0%";
+      statusEl.textContent = "Not started"; statusEl.style.color = "var(--muted)";
+      fillEl.style.opacity = 0;
+    }
+
+    if (ps.answered > 0) {
+      totalScore += ps.score;
+      totalMax   += ps.maxScore;
+      totalAnswered++;
+    }
+  });
+
+  // overall ring
+  let sumScore = 0, sumMax = 0;
+  pillars.forEach(p => {
+    p.questions.forEach((_, qi) => {
+      const key = `${p.id}-${qi}`;
+      if (answers[key] !== undefined) {
+        sumScore += answers[key];
+        sumMax   += 2;
+      }
+    });
+  });
+
+  const overallPctVal = sumMax === 0 ? null : Math.round((sumScore / sumMax) * 100);
+  const maturity = getOverallMaturity(overallPctVal);
+
+  const ring = document.getElementById("ringFill");
+  const pctLabel = document.getElementById("overallPct");
+  const badge = document.getElementById("maturityBadge");
+  const sub = document.getElementById("maturitySub");
+
+  if (overallPctVal !== null) {
+    const circum = 314;
+    const offset = circum - (overallPctVal / 100) * circum;
+    ring.style.strokeDashoffset = offset;
+    ring.style.stroke = maturity.color;
+    pctLabel.textContent = `${overallPctVal}%`;
+    pctLabel.style.color = maturity.color;
+  } else {
+    ring.style.strokeDashoffset = 314;
+    ring.style.stroke = "var(--border2)";
+    pctLabel.textContent = "—";
+    pctLabel.style.color = "var(--white)";
+  }
+
+  badge.textContent = maturity.label;
+  badge.style.background = maturity.bg;
+  badge.style.borderColor = maturity.border;
+  badge.style.color = maturity.color;
+  sub.textContent = maturity.sub;
+  sub.style.color = overallPctVal ? "var(--muted)" : "var(--muted)";
+
+  // next steps — show for pillars with answers, sorted worst first
+  const withScores = pillarResults
+    .filter(r => r.answered > 0)
+    .sort((a, b) => (a.pct || 999) - (b.pct || 999));
+
+  const nsWrap = document.getElementById("nextStepsWrap");
+  if (withScores.length === 0) {
+    nsWrap.innerHTML = `<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-text">Complete the diagnostic to unlock your personalised GTM action plan.</div></div>`;
+    return;
+  }
+
+  nsWrap.innerHTML = "";
+  withScores.slice(0, 4).forEach(r => {
+    const tier = getTier(r.pct);
+    const action = r.pillar.actions[tier.key] || "";
+    const card = document.createElement("div");
+    card.className = "next-step-card";
+    card.style.borderLeftColor = tier.color;
+    card.innerHTML = `
+      <div class="ns-label" style="color:${tier.color}">${r.pillar.letter} — ${r.pillar.shortName} · ${r.pct}% · ${tier.label}</div>
+      <div class="ns-text">${action}</div>
+    `;
+    nsWrap.appendChild(card);
+  });
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+renderQuestions();
+renderHeatmapCells();
+updateResults();
+</script>
+</body>
+</html>
